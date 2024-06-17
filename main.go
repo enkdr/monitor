@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
 	"syscall"
 	"time"
 )
@@ -63,6 +66,28 @@ func monitorDiskUsage(path string, interval time.Duration) {
 
 }
 
+func monitorProcessesAndCPU() {
+	for {
+
+		psCmd := exec.Command("ps", "aux")
+		output, err := psCmd.Output()
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
+
+		processCount := bytes.Count(output, []byte("\n"))
+
+		cpuUsage := runtime.NumCPU()
+
+		fmt.Printf("Number of processes: %d\n", processCount)
+		fmt.Printf("CPU usage: %d\n", cpuUsage)
+
+		time.Sleep(5 * time.Second) // Monitor every 5 seconds
+
+	}
+
+}
+
 func main() {
 	var interval int
 
@@ -88,7 +113,8 @@ func main() {
 		select {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
-			monitorDiskUsage(path, time.Duration(interval))
+			go monitorDiskUsage(path, time.Duration(interval))
+			go monitorProcessesAndCPU()
 		}
 	}
 
