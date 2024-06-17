@@ -30,7 +30,7 @@ type FileSystemStats struct {
 	Spare   [4]int64 `json:"spare"`
 }
 
-func monitorDiskUsage(path string, interval time.Duration) {
+func monitorDiskUsage(path string) {
 
 	fs := syscall.Statfs_t{}
 
@@ -63,28 +63,22 @@ func monitorDiskUsage(path string, interval time.Duration) {
 	}
 
 	fmt.Println(string(jsonData))
-
 }
 
 func monitorProcessesAndCPU() {
-	for {
 
-		psCmd := exec.Command("ps", "aux")
-		output, err := psCmd.Output()
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
-
-		processCount := bytes.Count(output, []byte("\n"))
-
-		cpuUsage := runtime.NumCPU()
-
-		fmt.Printf("Number of processes: %d\n", processCount)
-		fmt.Printf("CPU usage: %d\n", cpuUsage)
-
-		time.Sleep(5 * time.Second) // Monitor every 5 seconds
-
+	psCmd := exec.Command("ps", "aux")
+	output, err := psCmd.Output()
+	if err != nil {
+		fmt.Println("Error:", err)
 	}
+
+	processCount := bytes.Count(output, []byte("\n"))
+
+	cpuUsage := runtime.NumCPU()
+
+	fmt.Printf("Number of processes: %d\n", processCount)
+	fmt.Printf("CPU usage: %d\n", cpuUsage)
 
 }
 
@@ -113,8 +107,8 @@ func main() {
 		select {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
-			go monitorDiskUsage(path, time.Duration(interval))
-			go monitorProcessesAndCPU()
+			monitorDiskUsage(path)
+			monitorProcessesAndCPU()
 		}
 	}
 
