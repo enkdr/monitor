@@ -35,7 +35,8 @@ func main() {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
 			stats.MonitorDiskUsage(path)
-			stats.MonitorProcessesAndCPU()
+			stats.MonitorProcesses()
+			stats.MonitorCPU()
 		}
 	}
 

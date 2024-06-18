@@ -1,12 +1,9 @@
 package stats
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
-	"os/exec"
-	"runtime"
 	"syscall"
 	"time"
 
@@ -90,21 +87,4 @@ func MonitorDiskUsage(path string) {
 
 	// save to database
 	fmt.Println(string(jsonFsData))
-}
-
-func MonitorProcessesAndCPU() {
-
-	psCmd := exec.Command("ps", "aux")
-	output, err := psCmd.Output()
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
-
-	processCount := bytes.Count(output, []byte("\n"))
-
-	cpuUsage := runtime.NumCPU()
-
-	fmt.Printf("Number of processes: %d\n", processCount)
-	fmt.Printf("CPU usage: %d\n", cpuUsage)
-
 }
