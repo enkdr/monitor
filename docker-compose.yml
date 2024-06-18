@@ -5,23 +5,23 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_HOST: postgres
-      POSTGRES_DB: dbname
+      POSTGRES_DB: monitor
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
     volumes:
       - ./schema:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-  go-app:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-    environment:
-      PORT: 8080
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: username
-      DB_PASSWORD: password
-      DB_NAME: dbname
+  # go-app:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     PORT: 8080
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USER: username
+  #     DB_PASSWORD: password
+  #     DB_NAME: dbname

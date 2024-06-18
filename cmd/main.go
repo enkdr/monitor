@@ -3,9 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"syscall"
 	"time"
+
+	"github.com/enkdr/monitor/config"
+	"github.com/enkdr/monitor/database"
+	_ "github.com/lib/pq"
 )
 
 type Fsid struct {
@@ -56,13 +61,30 @@ func monitorDiskUsage(path string) {
 			Flags:   fs.Flags,
 			Spare:   fs.Spare,
 		},
-		CreatedAt: time.Now(),
 	}
 
 	jsonFsData, err := json.MarshalIndent(stats, "", " ")
 
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	config, err := config.GetConfig()
+	if err != nil {
+		log.Fatalln("Failed to retrieve configs:", err)
+	}
+
+	db, err := database.InitDB(config)
+	if err != nil {
+		log.Fatalf("failed to initialize database: %v", err)
+	}
+
+	defer db.Close()
+
+	qry := `INSERT INTO public.fs_stats (fs_stats_json, created_at) VALUES($1, $2);`
+	_, err = db.Exec(qry, jsonFsData, time.Now())
+	if err != nil {
+		log.Fatalf("failed to insert data: %v", err)
 	}
 
 	// save to database

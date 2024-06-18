@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
-	"plantlife/config"
+	"github.com/enkdr/monitor/config"
 
 	"github.com/jmoiron/sqlx"
 )
