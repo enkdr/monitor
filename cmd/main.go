@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 	"syscall"
 	"time"
 )
@@ -30,6 +27,11 @@ type FileSystemStats struct {
 	Spare   [4]int64 `json:"spare"`
 }
 
+type FsData struct {
+	FileSystemStats `json:"fs_stats"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
 func monitorDiskUsage(path string) {
 
 	fs := syscall.Statfs_t{}
@@ -39,48 +41,50 @@ func monitorDiskUsage(path string) {
 		fmt.Println(err)
 	}
 
-	fmt.Printf("%+v\n", fs)
-
-	stats := FileSystemStats{
-		Type:    fs.Type,
-		Bsize:   fs.Bsize,
-		Blocks:  fs.Blocks,
-		Bfree:   fs.Bfree,
-		Bavail:  fs.Bavail,
-		Files:   fs.Files,
-		Ffree:   fs.Ffree,
-		Fsid:    Fsid{X__val: fs.Fsid.X__val},
-		Namelen: fs.Namelen,
-		Frsize:  fs.Frsize,
-		Flags:   fs.Flags,
-		Spare:   fs.Spare,
+	stats := FsData{
+		FileSystemStats: FileSystemStats{
+			Type:    fs.Type,
+			Bsize:   fs.Bsize,
+			Blocks:  fs.Blocks,
+			Bfree:   fs.Bfree,
+			Bavail:  fs.Bavail,
+			Files:   fs.Files,
+			Ffree:   fs.Ffree,
+			Fsid:    Fsid{X__val: fs.Fsid.X__val},
+			Namelen: fs.Namelen,
+			Frsize:  fs.Frsize,
+			Flags:   fs.Flags,
+			Spare:   fs.Spare,
+		},
+		CreatedAt: time.Now(),
 	}
 
-	jsonData, err := json.MarshalIndent(stats, "", " ")
+	jsonFsData, err := json.MarshalIndent(stats, "", " ")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(string(jsonData))
+	// save to database
+	fmt.Println(string(jsonFsData))
 }
 
-func monitorProcessesAndCPU() {
+// func monitorProcessesAndCPU() {
 
-	psCmd := exec.Command("ps", "aux")
-	output, err := psCmd.Output()
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
+// 	psCmd := exec.Command("ps", "aux")
+// 	output, err := psCmd.Output()
+// 	if err != nil {
+// 		fmt.Println("Error:", err)
+// 	}
 
-	processCount := bytes.Count(output, []byte("\n"))
+// 	processCount := bytes.Count(output, []byte("\n"))
 
-	cpuUsage := runtime.NumCPU()
+// 	cpuUsage := runtime.NumCPU()
 
-	fmt.Printf("Number of processes: %d\n", processCount)
-	fmt.Printf("CPU usage: %d\n", cpuUsage)
+// 	fmt.Printf("Number of processes: %d\n", processCount)
+// 	fmt.Printf("CPU usage: %d\n", cpuUsage)
 
-}
+// }
 
 func main() {
 	var interval int
@@ -108,13 +112,8 @@ func main() {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
 			monitorDiskUsage(path)
-			monitorProcessesAndCPU()
+			// monitorProcessesAndCPU()
 		}
 	}
-
-	// for {
-	// 	time.Sleep(tick)
-	// 	fmt.Println("tick at: ", time.Now())
-	// }
 
 }
