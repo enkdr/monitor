@@ -11,6 +11,7 @@ import (
 
 func main() {
 	var interval int
+	taskChan := make(chan bool, 1)
 
 	if len(os.Args) < 4 {
 		fmt.Println("need to specify directory, interval and save to database boolean (1 or 0)")
@@ -37,15 +38,25 @@ func main() {
 	ticker := time.NewTicker(tick)
 	defer ticker.Stop()
 
+	go taskWorker(path, dbFlag, taskChan)
+
 	// run indefinitely
 	for {
 		select {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
-			stats.MonitorDiskUsage(path, dbFlag)
-			stats.MonitorProcesses(dbFlag)
-			stats.MonitorCPUAndMemory(dbFlag)
+			// stats.MonitorDiskUsage(path, dbFlag)
+			// stats.MonitorProcesses(dbFlag)
+			// stats.MonitorCPUAndMemory(dbFlag)
+			taskChan <- true
 		}
 	}
+}
 
+func taskWorker(path string, dbFlag bool, taskChan <-chan bool) {
+	for range taskChan {
+		stats.MonitorDiskUsage(path, dbFlag)
+		stats.MonitorProcesses(dbFlag)
+		stats.MonitorCPUAndMemory(dbFlag)
+	}
 }

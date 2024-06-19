@@ -42,6 +42,9 @@ func MonitorCPUAndMemory(dbFlag bool) {
 		if err != nil {
 			log.Fatalf("failed to save cpu_stats: %v", err)
 		}
+	} else {
+		fmt.Println("C P U  S T A T S")
+		fmt.Println(string(jsonData))
 	}
 
 }

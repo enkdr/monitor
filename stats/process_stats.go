@@ -37,6 +37,9 @@ func MonitorProcesses(dbFlag bool) {
 		if err != nil {
 			log.Fatalf("failed to save process_stats: %v", err)
 		}
+	} else {
+		fmt.Println("P R O C E S S  S T A T S")
+		fmt.Println(string(jsonData))
 	}
 
 }
