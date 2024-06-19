@@ -15,6 +15,7 @@ type Config struct {
 	DB_USER       string
 	DB_NAME       string
 	DB_PASSWORD   string
+	TEMPLATE_PATH string
 }
 
 func GetConfig() (Config, error) {
@@ -27,6 +28,7 @@ func GetConfig() (Config, error) {
 		"DB_USER":       &config.DB_USER,
 		"DB_NAME":       &config.DB_NAME,
 		"DB_PASSWORD":   &config.DB_PASSWORD,
+		"TEMPLATE_PATH": &config.TEMPLATE_PATH,
 	}
 
 	for key, value := range envVars {

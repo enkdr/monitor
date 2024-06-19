@@ -2,14 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
+	"github.com/enkdr/monitor/app"
 	"github.com/enkdr/monitor/stats"
 	_ "github.com/lib/pq"
 )
 
 func main() {
+
+	startApp()
 
 	var interval int
 	taskChan := make(chan bool, 1)
@@ -49,6 +53,7 @@ func main() {
 			taskChan <- true
 		}
 	}
+
 }
 
 // using channels to sync DB inserts
@@ -58,4 +63,15 @@ func taskWorker(path string, dbFlag bool, taskChan <-chan bool) {
 		stats.MonitorProcesses(dbFlag)
 		stats.MonitorCPUAndMemory(dbFlag)
 	}
+}
+
+func startApp() {
+	// start App
+	app := app.NewApp()
+
+	if err := app.ListenAndServe(); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
+
+	log.Println("Starting server on :8080")
 }
