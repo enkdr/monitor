@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+
 	var interval int
 	taskChan := make(chan bool, 1)
 
@@ -45,14 +46,12 @@ func main() {
 		select {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
-			// stats.MonitorDiskUsage(path, dbFlag)
-			// stats.MonitorProcesses(dbFlag)
-			// stats.MonitorCPUAndMemory(dbFlag)
 			taskChan <- true
 		}
 	}
 }
 
+// using channels to sync DB inserts
 func taskWorker(path string, dbFlag bool, taskChan <-chan bool) {
 	for range taskChan {
 		stats.MonitorDiskUsage(path, dbFlag)
