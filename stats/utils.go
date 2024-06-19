@@ -16,8 +16,6 @@ func StatsJSON(stats interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	// fmt.Println(string(jsonData))
-
 	return jsonData, nil
 }
 
@@ -40,6 +38,8 @@ func StatsDBInsert(tableName string, statsJson []byte) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("Inserting: %s", tableName)
 
 	return nil
 

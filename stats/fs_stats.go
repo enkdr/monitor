@@ -57,18 +57,16 @@ func MonitorDiskUsage(path string, dbFlag bool) {
 		},
 	}
 
-	jsonFsData, err := StatsJSON(stats)
+	jsonData, err := StatsJSON(stats)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(string(jsonFsData))
-
 	if dbFlag {
-		err = StatsDBInsert("fs_stats", jsonFsData)
+		err = StatsDBInsert("fs_stats", jsonData)
 		if err != nil {
-			log.Fatalf("failed to save stats: %v", err)
+			log.Fatalf("failed to save fs_stats: %v", err)
 		}
 	}
 

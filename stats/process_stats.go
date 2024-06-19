@@ -3,11 +3,17 @@ package stats
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os/exec"
 	"runtime"
 )
 
-func MonitorProcesses() {
+type ProcessesData struct {
+	ProcessCount int `json:"process_count"`
+	CPUUsage     int `json:"cpu_usage"`
+}
+
+func MonitorProcesses(dbFlag bool) {
 
 	psCmd := exec.Command("ps", "aux")
 	output, err := psCmd.Output()
@@ -15,11 +21,22 @@ func MonitorProcesses() {
 		fmt.Println("Error:", err)
 	}
 
-	processCount := bytes.Count(output, []byte("\n"))
+	stats := ProcessesData{
+		ProcessCount: bytes.Count(output, []byte("\n")),
+		CPUUsage:     runtime.NumCPU(),
+	}
 
-	cpuUsage := runtime.NumCPU()
+	jsonData, err := StatsJSON(stats)
 
-	fmt.Printf("Number of processes: %d\n", processCount)
-	fmt.Printf("CPU usage: %d\n", cpuUsage)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if dbFlag {
+		err = StatsDBInsert("process_stats", jsonData)
+		if err != nil {
+			log.Fatalf("failed to save process_stats: %v", err)
+		}
+	}
 
 }
