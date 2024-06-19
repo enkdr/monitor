@@ -16,12 +16,12 @@ func StatsJSON(stats interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println(string(jsonData))
+	// fmt.Println(string(jsonData))
 
 	return jsonData, nil
 }
 
-func StatsDBInsert(statsJson []byte) error {
+func StatsDBInsert(tableName string, statsJson []byte) error {
 
 	config, err := config.GetConfig()
 	if err != nil {
@@ -35,7 +35,7 @@ func StatsDBInsert(statsJson []byte) error {
 
 	defer db.Close()
 
-	qry := `INSERT INTO public.fs_stats (fs_stats_json, created_at) VALUES($1, $2);`
+	qry := fmt.Sprintf(`INSERT INTO public.%s (stats_json, created_at) VALUES($1, $2);`, tableName)
 	_, err = db.Exec(qry, statsJson, time.Now())
 	if err != nil {
 		return err
