@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
         eventSource = new EventSource('http://localhost:8080/stats');
 
         eventSource.onmessage = function (event) {
-            dataElement.innerHTML += JSON.stringify(event.data, null, 2) + '<br/>';
+            // dataElement.innerHTML += JSON.stringify(event.data, null, 2) + '<br/>';
+            dataElement.innerHTML += event.data + '<br/>';
         };
 
         eventSource.onerror = function () {

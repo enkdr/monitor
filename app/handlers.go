@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -29,7 +30,7 @@ func (a *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	fmt.Println("calling data handler")
+	fmt.Println("calling StatsHandler")
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
@@ -37,43 +38,48 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	i := 0
+	// Example table name
+	table := "fs_stats"
+
 	for {
 		select {
 		case <-ctx.Done():
 			fmt.Println("client disconnected or context canceled")
 			return
 		default:
-
-			data, err := database.GetRecentStatsData(a.db, "fs_stats")
-
-			// // Marshal the Data object to JSON
-			// jsonData, err := json.Marshal(data)
-
+			// Get the most recent data from the specified table
+			data, err := database.GetRecentStatsData(a.db, table)
 			if err != nil {
-				fmt.Println("error selecting data:", err)
+				http.Error(w, fmt.Sprintf("Failed to get most recent data: %v", err), http.StatusInternalServerError)
 				return
 			}
 
-			// convert StatsJSON from []byte to string
+			// convert StatsJSON from []byte to a string
 			statsJSONString := string(data.StatsJSON)
 
-			// Prepare a map for JSON encoding
-			responseData := map[string]interface{}{
+			// prepare a map for the SSE message
+			sseMessage := map[string]interface{}{
 				"id":         data.ID,
 				"stats_json": statsJSONString,
 				"created_at": data.CreatedAt,
 			}
 
-			// if err := json.NewEncoder(w).Encode(responseData); err != nil {
-			// 	http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
-			// }
+			// encode the SSE message to JSON
+			sseJSON, err := json.Marshal(sseMessage)
+			if err != nil {
+				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+				return
+			}
 
-			fmt.Fprintf(w, "data: %s\n\n", responseData)
+			// Write SSE message to the response
+			fmt.Fprintf(w, "data: %s\n\n", sseJSON)
 
-			w.(http.Flusher).Flush()
+			// Flush the response to ensure data is sent immediately
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			}
 
-			i++
+			// Sleep or wait for an event to occur before sending the next message
 			time.Sleep(2 * time.Second)
 		}
 	}
