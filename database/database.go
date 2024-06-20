@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"github.com/enkdr/monitor/config"
 
 	"github.com/jmoiron/sqlx"
@@ -23,8 +22,6 @@ func InitDB(config config.Config) (*sqlx.DB, error) {
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
-
-	log.Println("Successfully connected to the database")
 
 	return db, nil
 

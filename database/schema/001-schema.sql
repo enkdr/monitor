@@ -1,4 +1,6 @@
 -- schema.sql
+ALTER SYSTEM SET wal_level = logical;
+
 CREATE TABLE if not exists fs_stats  (
     id SERIAL PRIMARY KEY,
     stats_json JSONB NOT NULL,

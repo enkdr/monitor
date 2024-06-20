@@ -13,16 +13,16 @@ import (
 
 func main() {
 
-	startApp()
+	if len(os.Args) < 4 {
+		fmt.Println("need to specify directory, interval and save to database boolean (1 or 0)")
+		fmt.Println("go run cmd/main.go / 2 1")
+		os.Exit(0)
+	}
+
+	go startApp()
 
 	var interval int
 	taskChan := make(chan bool, 1)
-
-	if len(os.Args) < 4 {
-		fmt.Println("need to specify directory, interval and save to database boolean (1 or 0)")
-		fmt.Println("eg: go run cmd/main.go")
-		os.Exit(0)
-	}
 
 	path := os.Args[1]
 
@@ -65,13 +65,16 @@ func taskWorker(path string, dbFlag bool, taskChan <-chan bool) {
 	}
 }
 
-func startApp() {
+func startApp() error {
 	// start App
 	app := app.NewApp()
 
 	if err := app.ListenAndServe(); err != nil {
 		log.Fatal("Failed to start server:", err)
+		return err
 	}
 
 	log.Println("Starting server on :8080")
+
+	return nil
 }

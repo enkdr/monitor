@@ -9,10 +9,10 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
     volumes:
-      - ./schema:/docker-entrypoint-initdb.d
+      - ./database/schema:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-  # go-app:
+  # monitor-app:
   #   build: .
   #   ports:
   #     - "8080:8080"
