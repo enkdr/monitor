@@ -3,6 +3,7 @@ version: '3'
 services:
   postgres:
     image: postgres:latest
+    # image: lovearuis/postgres-wal2json:14.2
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: monitor
