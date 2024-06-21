@@ -1,0 +1,5 @@
+// fs_stats
+{ created_at: "2024-06-21T03:06:38.339027Z",
+  id: 516,
+  stats_json: '{"cpu_usage": 8, "created_at": "0001-01-01T00:00:00Z", "number_cpus": 8, "system_memory": 11099152, "allocated_memory": 2337032, "number_go_routines": 8, "total_allocated_memory": 2337032}' }
+​

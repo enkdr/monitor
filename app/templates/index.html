@@ -5,14 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>M O N I T O R</title>
-    </head>
+  </head>
   <body>
+
+    <style>
+      stats-dial {
+          display: block;
+          width: 160px;
+          height: 160px;
+      }
+    </style>
+
     <div id="app">
-
-      <div class="stats"></div>
-
+      <stats-dial value="50" min="0" max="100"></stats-dial>
     </div>
 
+
+    
+    <script src="/static/js/stats-dial.js"></script>
+    
     <script src="/static/js/app.js" type="text/javascript"></script>
+
+
   </body>
-  </html>
+</html>

@@ -38,8 +38,7 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	// Example table name
-	table := "fs_stats"
+	table := "cpu_stats"
 
 	for {
 		select {
@@ -47,7 +46,8 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("client disconnected or context canceled")
 			return
 		default:
-			// Get the most recent data from the specified table
+
+			// get the most recent data from the specified table
 			data, err := database.GetRecentStatsData(a.db, table)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to get most recent data: %v", err), http.StatusInternalServerError)
@@ -71,15 +71,15 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// Write SSE message to the response
+			// write SSE message to the response
 			fmt.Fprintf(w, "data: %s\n\n", sseJSON)
 
-			// Flush the response to ensure data is sent immediately
+			// flush the response to ensure data is sent immediately
 			if f, ok := w.(http.Flusher); ok {
 				f.Flush()
 			}
 
-			// Sleep or wait for an event to occur before sending the next message
+			// sleep or wait for an event to occur before sending the next message
 			time.Sleep(2 * time.Second)
 		}
 	}
