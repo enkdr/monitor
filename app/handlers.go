@@ -13,6 +13,36 @@ type pageData struct {
 	Title string
 }
 
+func (a *App) prepareStatsData(tableName string) (string, error) {
+	// get the most recent data from the specified table
+	data, err := database.GetRecentStatsData(a.db, tableName)
+
+	if err != nil {
+		return "", err
+	}
+
+	// convert StatsJSON from []byte to a string
+	statsJSONString := string(data.StatsJSON)
+
+	// prepare a map for the SSE message
+	sseMessage := map[string]interface{}{
+		"type":       tableName,
+		"id":         data.ID,
+		"stats_json": statsJSONString,
+		"created_at": data.CreatedAt,
+	}
+
+	// encode the SSE message to JSON
+	sseJSON, err := json.Marshal(sseMessage)
+	if err != nil {
+		return "", err
+		// http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+		// return
+	}
+
+	return string(sseJSON), nil
+}
+
 func (a *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("calling IndexHandler")
 	pageData := pageData{
@@ -38,8 +68,6 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	table := "cpu_stats"
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -47,36 +75,21 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		default:
 
-			// get the most recent data from the specified table
-			data, err := database.GetRecentStatsData(a.db, table)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Failed to get most recent data: %v", err), http.StatusInternalServerError)
-				return
-			}
-
-			// convert StatsJSON from []byte to a string
-			statsJSONString := string(data.StatsJSON)
-
-			// prepare a map for the SSE message
-			sseMessage := map[string]interface{}{
-				"id":         data.ID,
-				"stats_json": statsJSONString,
-				"created_at": data.CreatedAt,
-			}
-
-			// encode the SSE message to JSON
-			sseJSON, err := json.Marshal(sseMessage)
+			cpuStatsJSON, err := a.prepareStatsData("cpu_stats")
 			if err != nil {
 				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
 				return
 			}
 
-			// write SSE message to the response
-			fmt.Fprintf(w, "data: %s\n\n", sseJSON)
+			// Write JSON to the response in the SSE format
+			fmt.Fprintf(w, "data: %s\n\n", cpuStatsJSON)
 
-			// flush the response to ensure data is sent immediately
+			// Flush the response to ensure data is sent immediately
 			if f, ok := w.(http.Flusher); ok {
 				f.Flush()
+			} else {
+				http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+				return
 			}
 
 			// sleep or wait for an event to occur before sending the next message
