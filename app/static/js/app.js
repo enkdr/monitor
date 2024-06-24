@@ -1,34 +1,41 @@
 console.log("M O N I T O R");
 
+function updateDial(e) {
+    
+    const data = JSON.parse(e.data);
+    const statsTypes = Object.keys(data);
+       
+    statsTypes.forEach((d) => {
+        
+        const dial = document.querySelector(`.${d}_dial`);
+        const stats = JSON.parse(data[d]);
+        const value = dial.getAttribute('value');
+
+        console.log(dial);
+        console.log(stats);
+        console.log(value);
+
+        if (d === "cpu_stats") {
+            const memoryUsagePercentage = (stats.stats_json.allocated_memory / stats.stats_json.system_memory) * 100;
+            
+            dial.setAttribute('value', parseInt(memoryUsagePercentage));
+
+        }
+        
+    });
+        
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    // const dataElement = document.querySelector('.stats');
-
     let eventSource;
-
-    const statsDial = document.querySelector('stats-dial');
-    
-    // Accessing individual attributes
-    const value = statsDial.getAttribute('value');
     
     function connect() {
         eventSource = new EventSource('http://localhost:8080/stats');
 
         eventSource.onmessage = function (event) {
-            
-            let data = JSON.parse(event.data);
-            let cpuStats = JSON.parse(data.cpu_stats);
-            let fsStats = JSON.parse(data.fs_stats);
-            let psStats = JSON.parse(data.process_stats);
-
-            // console.log(cpuStats);
-            // console.log(fsStats);
-            // console.log(psStats);
-
-            const memoryUsagePercentage = (cpuStats.stats_json.allocated_memory / cpuStats.stats_json.system_memory) * 100;
-            
-            statsDial.setAttribute('value', parseInt(memoryUsagePercentage));
-
+            updateDial(event);
         };
 
         eventSource.onerror = function () {
