@@ -1,21 +1,21 @@
 console.log("M O N I T O R");
 
+
 function updateDial(e) {
     
     const data = JSON.parse(e.data);
     const statsTypes = Object.keys(data);
-       
+    
     statsTypes.forEach((d) => {
         
         const dial = document.querySelector(`.${d}_dial`);
         const stats = JSON.parse(data[d]);
         const value = dial.getAttribute('value');
 
-        console.log(dial);
-        console.log(stats);
-        console.log(value);
-
         if (d === "cpu_stats") {
+
+            let cpuStatsInfo = document.querySelector(".cpu_stats_info");
+            
             const memoryUsagePercentage = (stats.stats_json.allocated_memory / stats.stats_json.system_memory) * 100;
             
             dial.setAttribute('value', parseInt(memoryUsagePercentage));
