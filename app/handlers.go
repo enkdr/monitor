@@ -70,28 +70,16 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		default:
 
-			cpuStatsJSON, err := a.prepareStatsData("cpu_stats")
-			if err != nil {
-				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
-				return
-			}
+			allStats := make(map[string]interface{})
+			statTypes := []string{"cpu_stats", "fs_stats", "process_stats"}
 
-			fsStatsJSON, err := a.prepareStatsData("fs_stats")
-			if err != nil {
-				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
-				return
-			}
-
-			psStatsJSON, err := a.prepareStatsData("process_stats")
-			if err != nil {
-				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
-				return
-			}
-
-			allStats := map[string]interface{}{
-				"cpu_stats":     cpuStatsJSON,
-				"fs_stats":      fsStatsJSON,
-				"process_stats": psStatsJSON,
+			for _, statType := range statTypes {
+				statsJSON, err := a.prepareStatsData(statType)
+				if err != nil {
+					http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+					return
+				}
+				allStats[statType] = statsJSON
 			}
 
 			allStatsJSON, err := json.Marshal(allStats)
