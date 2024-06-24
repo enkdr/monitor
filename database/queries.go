@@ -7,6 +7,21 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// move this from stats/utils -- have to inject db
+// func InsertStatsData(tableName string, statsJson []byte) error {
+
+// 	qry := fmt.Sprintf(`INSERT INTO public.%s (stats_json, created_at) VALUES($1, $2);`, tableName)
+// 	_, err = db.Exec(qry, statsJson, time.Now())
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	fmt.Println("Inserting: %s", tableName)
+
+// 	return nil
+
+// }
+
 func GetStatsData(db *sqlx.DB, table string) ([]Data, error) {
 	query := fmt.Sprintf("SELECT id, stats_json, created_at FROM %s", table)
 

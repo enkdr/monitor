@@ -15,14 +15,17 @@ document.addEventListener("DOMContentLoaded", function () {
         eventSource = new EventSource('http://localhost:8080/stats');
 
         eventSource.onmessage = function (event) {
-
             
             let data = JSON.parse(event.data);
-            let stats = JSON.parse(data.stats_json);
+            let cpuStats = JSON.parse(data.cpu_stats);
+            let fsStats = JSON.parse(data.fs_stats);
+            let psStats = JSON.parse(data.process_stats);
 
-            console.log(stats);
+            // console.log(cpuStats);
+            // console.log(fsStats);
+            // console.log(psStats);
 
-            const memoryUsagePercentage = (stats.allocated_memory / stats.system_memory) * 100;
+            const memoryUsagePercentage = (cpuStats.stats_json.allocated_memory / cpuStats.stats_json.system_memory) * 100;
             
             statsDial.setAttribute('value', parseInt(memoryUsagePercentage));
 

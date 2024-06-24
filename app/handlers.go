@@ -21,14 +21,11 @@ func (a *App) prepareStatsData(tableName string) (string, error) {
 		return "", err
 	}
 
-	// convert StatsJSON from []byte to a string
-	statsJSONString := string(data.StatsJSON)
-
 	// prepare a map for the SSE message
 	sseMessage := map[string]interface{}{
 		"type":       tableName,
 		"id":         data.ID,
-		"stats_json": statsJSONString,
+		"stats_json": data.StatsJSON,
 		"created_at": data.CreatedAt,
 	}
 
@@ -36,8 +33,6 @@ func (a *App) prepareStatsData(tableName string) (string, error) {
 	sseJSON, err := json.Marshal(sseMessage)
 	if err != nil {
 		return "", err
-		// http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
-		// return
 	}
 
 	return string(sseJSON), nil
@@ -81,8 +76,34 @@ func (a *App) StatsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// Write JSON to the response in the SSE format
-			fmt.Fprintf(w, "data: %s\n\n", cpuStatsJSON)
+			fsStatsJSON, err := a.prepareStatsData("fs_stats")
+			if err != nil {
+				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+				return
+			}
+
+			psStatsJSON, err := a.prepareStatsData("process_stats")
+			if err != nil {
+				http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+				return
+			}
+
+			allStats := map[string]interface{}{
+				"cpu_stats":     cpuStatsJSON,
+				"fs_stats":      fsStatsJSON,
+				"process_stats": psStatsJSON,
+			}
+
+			allStatsJSON, err := json.Marshal(allStats)
+			if err != nil {
+				fmt.Println("Error marshaling JSON:", err)
+				return
+			}
+
+			// Convert JSON byte slice to string
+			allStatsJSONString := string(allStatsJSON)
+
+			fmt.Fprintf(w, "data: %s\n\n", allStatsJSONString)
 
 			// Flush the response to ensure data is sent immediately
 			if f, ok := w.(http.Flusher); ok {
