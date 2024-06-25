@@ -1,5 +1,80 @@
 // fs_stats
 { created_at: "2024-06-21T03:06:38.339027Z",
   id: 516,
-  stats_json: '{"cpu_usage": 8, "created_at": "0001-01-01T00:00:00Z", "number_cpus": 8, "system_memory": 11099152, "allocated_memory": 2337032, "number_go_routines": 8, "total_allocated_memory": 2337032}' }
+  stats_json: '{
+    "cpu_usage": 8,
+    "created_at": "0001-01-01T00:00:00Z",
+    "number_cpus": 8,
+    "system_memory": 11099152,
+    "allocated_memory": 2337032,
+    "number_go_routines": 8,
+    "total_allocated_memory": 2337032
+  }'
+}
 ​
+
+// event source event.data
+{
+  "cpu_stats": {
+    "created_at": "2024-06-24T21:34:09.573318Z",
+    "id": 1349,
+    "stats_json": {
+      "cpu_usage": 8,
+      "created_at": "0001-01-01T00:00:00Z",
+      "number_cpus": 8,
+      "system_memory": 11361296,
+      "allocated_memory": 2882072,
+      "number_go_routines": 8,
+      "total_allocated_memory": 2882072
+    },
+    "type": "cpu_stats"
+  },
+  "fs_stats": {
+    "created_at": "2024-06-24T21:34:09.536092Z",
+    "id": 1351,
+    "stats_json": {
+      "fs_stats": {
+        "Fsid": {
+          "fsid": [
+            -325283454,
+            1172298548
+          ]
+        },
+        "type": 61267,
+        "flags": 4128,
+        "spare": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "block_size": 4096,
+        "free_files": 12186868,
+        "free_blocks": 30790763,
+        "total_files": 15155200,
+        "total_blocks": 59390666,
+        "fragment_size": 4096,
+        "max_name_length": 255,
+        "available_blocks": 27755691
+      },
+      "created_at": "0001-01-01T00:00:00Z"
+    },
+    "type": "fs_stats"
+  },
+  "process_stats": {
+    "created_at": "2024-06-24T21:34:09.563987Z",
+    "id": 1349,
+    "stats_json": {
+      "cpu_usage": 8,
+      "process_count": 349
+    },
+    "type": "process_stats"
+  }
+}
+// const statsTypes = Object.keys(data);
+// array
+[
+  "cpu_stats",
+  "fs_stats",
+  "process_stats"
+]

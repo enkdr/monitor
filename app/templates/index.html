@@ -17,21 +17,22 @@
     </style>
 
     <div id="app">
-      <stats-dial value="50" min="0" max="100" class="cpu_stats_dial"></stats-dial>
-      <template class="cpu_stats_info"></template>
-      
-      <stats-dial value="50" min="0" max="100" class="fs_stats_dial"></stats-dial>
 
-      <stats-dial value="50" min="0" max="100" class="process_stats_dial"></stats-dial>
-
+      <div class="stats-dials"> 
+        <stats-dial value="50" min="0" max="100" class="cpu_stats_dial"></stats-dial>      
+        <stats-dial value="50" min="0" max="100" class="fs_stats_dial"></stats-dial>
+        <stats-dial value="50" min="0" max="100" class="process_stats_dial"></stats-dial>
+      </div>
+              
+      <div class="stats-info"> 
+        <template class="cpu_stats_info"></template>
+        <template class="fs_stats_info"></template>
+        <template class="process_stats_info"></template>
+      </div>
     </div>
 
-
-    
-    <script src="/static/js/stats-dial.js"></script>
-    
-    <script src="/static/js/app.js" type="text/javascript"></script>
-
+    <script src="/static/js/stats-dial.js" type="module"></script>
+    <script src="/static/js/app.js" type="module"></script>
 
   </body>
 </html>

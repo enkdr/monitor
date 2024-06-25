@@ -1,10 +1,24 @@
+import StatsTemplate from './stats-template.js';
 console.log("M O N I T O R");
 
+function storeStats(statsString) {
+    window.localStorage.setItem("storedStats",statsString);
+}
 
-function updateDial(e) {
-    
-    const data = JSON.parse(e.data);
-    const statsTypes = Object.keys(data);
+function updateInfo() {
+
+    const jsonData = JSON.parse(window.localStorage.getItem("storedStats"));
+    const statsTemplate = new StatsTemplate(jsonData);
+    const statsInfoTemplate = statsTemplate.generateAllTemplates();
+
+    const container = document.querySelector('.stats-info');
+    container.innerHTML = "";
+    container.insertAdjacentHTML("afterbegin",statsInfoTemplate);
+
+}
+
+
+function updateDial(data,statsTypes) {
     
     statsTypes.forEach((d) => {
         
@@ -15,15 +29,11 @@ function updateDial(e) {
         if (d === "cpu_stats") {
 
             let cpuStatsInfo = document.querySelector(".cpu_stats_info");
-            
             const memoryUsagePercentage = (stats.stats_json.allocated_memory / stats.stats_json.system_memory) * 100;
             
             dial.setAttribute('value', parseInt(memoryUsagePercentage));
-
-        }
-        
-    });
-        
+        }        
+    });        
 }
 
 
@@ -35,7 +45,14 @@ document.addEventListener("DOMContentLoaded", function () {
         eventSource = new EventSource('http://localhost:8080/stats');
 
         eventSource.onmessage = function (event) {
-            updateDial(event);
+
+            const data = JSON.parse(event.data);
+            const statsTypes = Object.keys(data);
+
+            updateDial(data,statsTypes);
+            // localstorage uses string
+            storeStats(event.data);
+            updateInfo();
         };
 
         eventSource.onerror = function () {
