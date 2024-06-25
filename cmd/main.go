@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/enkdr/monitor/app"
@@ -13,28 +12,22 @@ import (
 
 func main() {
 
-	if len(os.Args) < 4 {
-		fmt.Println("need to specify directory, interval and save to database boolean (1 or 0)")
-		fmt.Println("go run cmd/main.go / 2 1")
-		os.Exit(0)
-	}
-
 	go startApp()
 
-	var interval int
-	taskChan := make(chan bool, 1)
+	path := "/"
+	interval := 2
+	dbBoolean := "n"
 
-	path := os.Args[1]
+	fmt.Println("Enter a directory to monitor (default is /)")
+	fmt.Scanln(&path)
+	fmt.Println("Enter an interval in seconds (default is 2)")
+	fmt.Scanln(&interval)
+	fmt.Println("Save to db? (y or n) default is n")
+	fmt.Scanln(&dbBoolean)
 
-	if _, err := fmt.Sscanf(os.Args[2], "%d", &interval); err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-
-	// if 0: don't save to database
 	dbFlag := false
 
-	if len(os.Args) > 3 && os.Args[3] == "1" {
+	if dbBoolean == "y" {
 		dbFlag = true
 	}
 
@@ -42,6 +35,8 @@ func main() {
 	tick := time.Duration(interval) * time.Second
 	ticker := time.NewTicker(tick)
 	defer ticker.Stop()
+
+	taskChan := make(chan bool, 1)
 
 	go taskWorker(path, dbFlag, taskChan)
 
