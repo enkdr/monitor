@@ -1,0 +1,30 @@
+body {
+    font-family: arial;
+    background-color: #000000; 
+}
+
+html {
+     color: #4fff36;
+}
+
+#app {
+    display: grid;
+    grid-template-columns: 200px 400px;
+}
+
+/* stats-dial web-component */
+stats-dial {
+    display: block;
+    width: 160px;
+    height: 160px;
+}
+
+.stats-info {
+    line-height: .5em;
+}
+
+.stats-info > div {
+    margin-bottom: 24px;
+    border: 1px solid #4fff36;
+    padding: 12px;
+}
