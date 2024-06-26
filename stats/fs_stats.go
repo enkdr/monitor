@@ -68,9 +68,5 @@ func MonitorDiskUsage(path string, dbFlag bool) {
 		if err != nil {
 			log.Fatalf("failed to save fs_stats: %v", err)
 		}
-	} // else {
-	// 	fmt.Println("D I S K  S T A T S")
-	// 	fmt.Println(string(jsonData))
-	// }
-
+	}
 }

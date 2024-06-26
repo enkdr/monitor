@@ -25,11 +25,8 @@ func main() {
 	fmt.Println("Save to db? (y or n) default is n")
 	fmt.Scanln(&dbBoolean)
 
-	dbFlag := false
-
-	if dbBoolean == "y" {
-		dbFlag = true
-	}
+	// true if dbBoolean is y otherwise false
+	dbFlag := (dbBoolean == "y")
 
 	// more precise than sleep
 	tick := time.Duration(interval) * time.Second
@@ -53,6 +50,16 @@ func main() {
 
 // using channels to sync DB inserts
 func taskWorker(path string, dbFlag bool, taskChan <-chan bool) {
+
+	fmt.Println("Launching application http://localhost:8080")
+
+	switch dbFlag {
+	case true:
+		fmt.Println("requesting stats and saving to the database")
+	default:
+		fmt.Println("requesting stats and printing to stdout only")
+	}
+
 	for range taskChan {
 		stats.MonitorDiskUsage(path, dbFlag)
 		stats.MonitorProcesses(dbFlag)
