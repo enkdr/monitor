@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"syscall"
-	"time"
 )
 
 type Fsid struct {
@@ -28,7 +27,6 @@ type FileSystemStats struct {
 
 type FsData struct {
 	FileSystemStats `json:"fs_stats"`
-	CreatedAt       time.Time `json:"created_at"`
 }
 
 func MonitorDiskUsage(path string, dbFlag bool) {

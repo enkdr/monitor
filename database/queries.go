@@ -7,22 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// move this from stats/utils -- have to inject db
-// func InsertStatsData(tableName string, statsJson []byte) error {
-
-// 	qry := fmt.Sprintf(`INSERT INTO public.%s (stats_json, created_at) VALUES($1, $2);`, tableName)
-// 	_, err = db.Exec(qry, statsJson, time.Now())
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	fmt.Println("Inserting: %s", tableName)
-
-// 	return nil
-
-// }
-
-func GetStatsData(db *sqlx.DB, table string) ([]Data, error) {
+func GetStatsData(db *sqlx.DB, table string) ([]StatsData, error) {
 	query := fmt.Sprintf("SELECT id, stats_json, created_at FROM %s", table)
 
 	rows, err := db.Queryx(query)
@@ -31,9 +16,9 @@ func GetStatsData(db *sqlx.DB, table string) ([]Data, error) {
 	}
 	defer rows.Close()
 
-	var data []Data
+	var data []StatsData
 	for rows.Next() {
-		var d Data
+		var d StatsData
 		if err := rows.StructScan(&d); err != nil {
 			return nil, err
 		}
@@ -50,9 +35,9 @@ func GetStatsData(db *sqlx.DB, table string) ([]Data, error) {
 	return data, nil
 }
 
-func GetRecentStatsData(db *sqlx.DB, table string) (*Data, error) {
+func GetRecentStatsData(db *sqlx.DB, table string) (*StatsData, error) {
 
-	var data Data
+	var data StatsData
 	query := fmt.Sprintf("SELECT id, stats_json, created_at FROM %s ORDER BY created_at DESC LIMIT 1", table)
 	err := db.Get(&data, query)
 	if err != nil {
@@ -61,5 +46,6 @@ func GetRecentStatsData(db *sqlx.DB, table string) (*Data, error) {
 		}
 		return nil, err
 	}
+
 	return &data, nil
 }
