@@ -9,7 +9,6 @@ class StatsTemplate {
         const stats = JSON.parse(this.data[statKey]);
         const statsJson = stats.stats_json;
         const title = this.formatTitle(statKey);
-
         
         let template = `<div class="${statKey}"><h2>${title}</h2>`;
 
@@ -24,8 +23,6 @@ class StatsTemplate {
         template += `</div>`;
 
         return template;
-
-        return "ok";
         
     }
 

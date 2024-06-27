@@ -13,16 +13,27 @@ services:
       - ./database/schema:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-  # monitor-app:
-  #   build: .
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - postgres
-  #   environment:
-  #     PORT: 8080
-  #     DB_HOST: postgres
-  #     DB_PORT: 5432
-  #     DB_USER: username
-  #     DB_PASSWORD: password
-  #     DB_NAME: dbname
+    networks:
+      - app-network
+
+  go-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: username
+      DB_PASSWORD: password
+      DB_NAME: monitor
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

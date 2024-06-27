@@ -16,14 +16,14 @@ func main() {
 
 	path := "/"
 	interval := 2
-	dbBoolean := "n"
+	dbBoolean := "y"
 
-	fmt.Println("Enter a directory to monitor (default is /)")
-	fmt.Scanln(&path)
-	fmt.Println("Enter an interval in seconds (default is 2)")
-	fmt.Scanln(&interval)
-	fmt.Println("Save to db? (y or n) default is n")
-	fmt.Scanln(&dbBoolean)
+	// fmt.Println("Enter a directory to monitor (default is /)")
+	// fmt.Scanln(&path)
+	// fmt.Println("Enter an interval in seconds (default is 2)")
+	// fmt.Scanln(&interval)
+	// fmt.Println("Save to db? (y or n) default is n")
+	// fmt.Scanln(&dbBoolean)
 
 	// true if dbBoolean is y otherwise false
 	dbFlag := (dbBoolean == "y")
