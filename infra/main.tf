@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "main" {
   container_definitions = jsonencode([
     {
       name      = "go-app"
-      image     = "rappercharmer/go-app:latest"
+      image     = "rappercharmer/monitor_go-app:latest"
       essential = true
       portMappings = [
         {
