@@ -1,6 +1,6 @@
 // stats-dial.js
-
 class StatsDial extends HTMLElement {
+    
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
