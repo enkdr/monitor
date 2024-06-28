@@ -35,8 +35,8 @@ resource "aws_ecs_cluster" "main" {
   name = "ecs-cluster"
 }
 
-resource "aws_ecs_task_definition" "go_app" {
-  family                   = "go_app"
+resource "aws_ecs_task_definition" "main" {
+  family                   = "main-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
@@ -45,8 +45,8 @@ resource "aws_ecs_task_definition" "go_app" {
 
   container_definitions = jsonencode([
     {
-      name  = "go-app"
-      image = "your_dockerhub_username/go-app:latest"
+      name      = "go-app"
+      image     = "rappercharmer/go-app:latest"
       essential = true
       portMappings = [
         {
@@ -54,14 +54,39 @@ resource "aws_ecs_task_definition" "go_app" {
           hostPort      = 8080
         }
       ]
+      environment = [
+        { name = "PORT", value = "8080" },
+        { name = "DB_HOST", value = "postgres" },
+        { name = "DB_PORT", value = "5432" },
+        { name = "DB_USER", value = "username" },
+        { name = "DB_PASSWORD", value = "password" },
+        { name = "DB_NAME", value = "mydatabase" },  # Update to your PostgreSQL database name
+        { name = "TEMPLATE_PATH", value = "/app/templates/index.html" },
+      ]
+    },
+    {
+      name      = "postgres"
+      image     = "rappercharmer/postgres:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 5432
+          hostPort      = 5432
+        }
+      ]
+      environment = [
+        { name = "POSTGRES_DB", value = "mydatabase" },  # Update to your PostgreSQL database name
+        { name = "POSTGRES_USER", value = "username" },
+        { name = "POSTGRES_PASSWORD", value = "password" },
+      ]
     }
   ])
 }
 
-resource "aws_ecs_service" "go_app" {
-  name            = "go-app"
+resource "aws_ecs_service" "main" {
+  name            = "main-service"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.go_app.arn
+  task_definition = aws_ecs_task_definition.main.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
