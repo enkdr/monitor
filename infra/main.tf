@@ -2,6 +2,15 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
+data "aws_secretsmanager_secret_version" "db_creds" {
+  secret_id = "mydatabase-creds"
+}
+
+locals {
+  db_username = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)["username"]
+  db_password = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)["password"]
+}
+
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
@@ -19,6 +28,13 @@ resource "aws_security_group" "ecs" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -56,28 +72,12 @@ resource "aws_ecs_task_definition" "main" {
       ]
       environment = [
         { name = "PORT", value = "8080" },
-        { name = "DB_HOST", value = "postgres" },
+        { name = "DB_HOST", value = aws_db_instance.postgres.address },
         { name = "DB_PORT", value = "5432" },
-        { name = "DB_USER", value = "username" },
-        { name = "DB_PASSWORD", value = "password" },
-        { name = "DB_NAME", value = "mydatabase" },  # Update to your PostgreSQL database name
+        { name = "DB_USER", value = local.db_username },
+        { name = "DB_PASSWORD", value = local.db_password },
+        { name = "DB_NAME", value = "mydatabase" },
         { name = "TEMPLATE_PATH", value = "/app/templates/index.html" },
-      ]
-    },
-    {
-      name      = "postgres"
-      image     = "rappercharmer/postgres:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 5432
-          hostPort      = 5432
-        }
-      ]
-      environment = [
-        { name = "POSTGRES_DB", value = "mydatabase" },  # Update to your PostgreSQL database name
-        { name = "POSTGRES_USER", value = "username" },
-        { name = "POSTGRES_PASSWORD", value = "password" },
       ]
     }
   ])
@@ -96,13 +96,13 @@ resource "aws_ecs_service" "main" {
   }
 }
 
-resource "aws_rds_instance" "postgres" {
+resource "aws_db_instance" "postgres" {
   allocated_storage    = 20
   engine               = "postgres"
   instance_class       = "db.t2.micro"
   name                 = "mydatabase"
-  username             = "username"
-  password             = "password"
+  username             = local.db_username
+  password             = local.db_password
   parameter_group_name = "default.postgres10"
   publicly_accessible  = true
   vpc_security_group_ids = [aws_security_group.ecs.id]

@@ -31,6 +31,7 @@ func GetConfig() (Config, error) {
 		"TEMPLATE_PATH": &config.TEMPLATE_PATH,
 	}
 
+		// loop through env(s)
 	for key, value := range envVars {
 		envValue := os.Getenv(key)
 		if envValue == "" {
