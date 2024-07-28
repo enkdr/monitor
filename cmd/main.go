@@ -14,16 +14,15 @@ func main() {
 
 	path := "/"
 	interval := 2
-	dbBoolean := "n"
+	dbBoolean := "y"
 
 	fmt.Println("Enter a directory to monitor (default is /)")
 	fmt.Scanln(&path)
 	fmt.Println("Enter an interval in seconds (default is 2)")
 	fmt.Scanln(&interval)
-	fmt.Println("Save to db? (y or n) default is n")
+	fmt.Println("Save to db? (y or n) default is y")
 	fmt.Scanln(&dbBoolean)
 
-	// // true if dbBoolean is y otherwise false
 	dbFlag := (dbBoolean == "y")
 
 	// more precise than sleep
@@ -35,6 +34,13 @@ func main() {
 
 	go taskWorker(path, dbFlag, taskChan)
 
+	// Start the application server
+	go func() {
+		if err := startApp(); err != nil {
+			log.Fatalf("Application failed to start: %v", err)
+		}
+	}()
+
 	// run indefinitely
 	// for {
 	// 	select {
@@ -44,16 +50,15 @@ func main() {
 	// 	}
 	// }
 
-	// // testing: run only 10 times
-	for x := 0; x < 10; x++ {
+	// // testing: run only 1000 times
+	for x := 0; x < 1000; x++ {
 		select {
 		case <-ticker.C:
 			fmt.Println("tick at: ", time.Now())
+			fmt.Println("tick number: ", x)
 			taskChan <- true
 		}
 	}
-
-	go startApp()
 
 }
 
