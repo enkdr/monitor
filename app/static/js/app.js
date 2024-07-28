@@ -29,12 +29,16 @@ function updateDial(data,statsTypes) {
         const value = dial.getAttribute('value');
 
         if (d === "cpu_stats") {
-
-            let cpuStatsInfo = document.querySelector(".cpu_stats_info");
-            const memoryUsagePercentage = (stats.stats_json.allocated_memory / stats.stats_json.system_memory) * 100;
-            
-            dial.setAttribute('value', parseInt(memoryUsagePercentage));
+            const memoryUsagePercentage = Math.round(parseInt((stats.stats_json.allocated_memory / stats.stats_json.system_memory) * 100));            
+            dial.setAttribute('value', memoryUsagePercentage);
         }        
+
+        if (d === "fs_stats") {
+            const fsUsagePercentage = Math.round(parseInt((stats.stats_json.fs_stats.free_files / stats.stats_json.fs_stats.total_files) * 100));
+            dial.setAttribute('value', fsUsagePercentage);
+        }        
+
+
     });        
 }
 

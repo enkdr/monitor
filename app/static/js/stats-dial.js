@@ -46,7 +46,7 @@ class StatsDial extends HTMLElement {
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         ctx.lineWidth = 10;
-        ctx.strokeStyle = '#e0e0e0';
+        ctx.strokeStyle = '#333333';
         ctx.stroke();
 
         // Draw the dial value
@@ -54,7 +54,7 @@ class StatsDial extends HTMLElement {
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, angle);
         ctx.lineWidth = 10;
-        ctx.strokeStyle = '#4CAF50';
+        ctx.strokeStyle = '#4fff36';
         ctx.stroke();
     }
 

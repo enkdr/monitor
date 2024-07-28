@@ -15,8 +15,6 @@ html {
 /* stats-dial web-component */
 stats-dial {
     display: block;
-    width: 160px;
-    height: 160px;
 }
 
 .stats-info {
