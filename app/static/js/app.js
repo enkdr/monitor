@@ -7,6 +7,8 @@ function storeStats(statsString) {
 
 function updateInfo() {
 
+    console.log("calling updateInfo()");
+    
     const jsonData = JSON.parse(window.localStorage.getItem("storedStats"));
     const statsTemplate = new StatsTemplate(jsonData);
     const statsInfoTemplate = statsTemplate.generateAllTemplates();
